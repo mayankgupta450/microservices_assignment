@@ -14,49 +14,49 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class UserService {
 
-    private final UserRepository userRepository;
+	private final UserRepository userRepository;
 
-    // create user
-    public User createUser(User user) {
+	// create user
+	public User createUser(User user) {
 
-        boolean emailExists = userRepository
-                .findAll()
-                .stream()
-                .anyMatch(u -> u.getEmail().equals(user.getEmail()));
+		boolean emailExists = userRepository.findAll().stream().anyMatch(u -> u.getEmail().equals(user.getEmail()));
 
-        if (emailExists) {
-            throw new ResourceAlreadyExistsException(
-                    "User with this email already exists");
-        }
+		if (emailExists) {
+			throw new ResourceAlreadyExistsException("User with this email already exists");
+		}
 
-        return userRepository.save(user);
-    }
+		return userRepository.save(user);
+	}
 
-    // get all users
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
-    }
+	// get all users
+	public List<User> getAllUsers() {
+		return userRepository.findAll();
+	}
 
-    public User getUserById(Long id) {
-        return userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-    }
+	public User getUserById(Long id) {
+		return userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
+	}
 
-    // update exisiting user
-    public User updateUser(Long id, User updatedUser) {
+	// update exisiting user
+	public User updateUser(Long id, User updatedUser) {
 
-        User existingUser = userRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+		User existingUser = userRepository.findById(id).orElseThrow(() -> new RuntimeException("User not found"));
 
-      
-        if (!existingUser.getEmail().equals(updatedUser.getEmail())) {
-            throw new RuntimeException("You cannot change email address");
-        }
+		if (!existingUser.getEmail().equals(updatedUser.getEmail())) {
+			throw new RuntimeException("You cannot change email address");
+		}
 
-        existingUser.setName(updatedUser.getName());
-        existingUser.setPhone(updatedUser.getPhone());
+		existingUser.setName(updatedUser.getName());
+		existingUser.setPhone(updatedUser.getPhone());
 
-        return userRepository.save(existingUser);
-    }
-   
+		return userRepository.save(existingUser);
+	}
+
+	public void deleteUser(Long id) {
+
+		User existingUser = getUserById(id);
+
+		userRepository.delete(existingUser);
+	}
+
 }
