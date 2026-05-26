@@ -37,5 +37,26 @@ public class UserService {
         return userRepository.findAll();
     }
 
+    public User getUserById(Long id) {
+        return userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+    }
+
+    // update exisiting user
+    public User updateUser(Long id, User updatedUser) {
+
+        User existingUser = userRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+      
+        if (!existingUser.getEmail().equals(updatedUser.getEmail())) {
+            throw new RuntimeException("You cannot change email address");
+        }
+
+        existingUser.setName(updatedUser.getName());
+        existingUser.setPhone(updatedUser.getPhone());
+
+        return userRepository.save(existingUser);
+    }
    
 }
