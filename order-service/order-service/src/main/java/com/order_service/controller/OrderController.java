@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.order_service.entity.Order;
 import com.order_service.service.OrderService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -26,38 +27,42 @@ public class OrderController {
 	private final OrderService orderService;
 
 	@PostMapping
+	@Operation(summary = "create order endpoint")
 	public ResponseEntity<Order> createOrder(@Valid @RequestBody Order order) {
 		return ResponseEntity.ok(orderService.createOrder(order));
 	}
 
 	@GetMapping
+	@Operation(summary = "get all orders")
 	public ResponseEntity<List<Order>> getAllOrders() {
 		return ResponseEntity.ok(orderService.getAllOrders());
 	}
 
 	@GetMapping("/{id}")
+	@Operation(summary = "Get order by id")
 	public ResponseEntity<Order> getOrderById(@PathVariable Long id) {
 		return ResponseEntity.ok(orderService.getOrderById(id));
 	}
 
 	@GetMapping("/user/{userId}")
+	@Operation(summary = "get orders by userID")
 	public ResponseEntity<List<Order>> getOrdersByUserId(@PathVariable Long userId) {
 		return ResponseEntity.ok(orderService.getOrdersByUserId(userId));
 	}
-	
-    @PutMapping("/{id}")
-    public ResponseEntity<Order> updateOrder(
-            @PathVariable Long id,
-            @Valid @RequestBody Order order) {
 
-        return ResponseEntity.ok(orderService.updateOrder(id, order));
-    }
+	@PutMapping("/{id}")
+	@Operation(summary = "update orders")
+	public ResponseEntity<Order> updateOrder(@PathVariable Long id, @Valid @RequestBody Order order) {
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteOrder(@PathVariable Long id) {
+		return ResponseEntity.ok(orderService.updateOrder(id, order));
+	}
 
-        orderService.deleteOrder(id);
-        return ResponseEntity.ok("Order deleted successfully");
-    }
+	@DeleteMapping("/{id}")
+	@Operation(summary = "delete orders")
+	public ResponseEntity<String> deleteOrder(@PathVariable Long id) {
+
+		orderService.deleteOrder(id);
+		return ResponseEntity.ok("Order deleted successfully");
+	}
 
 }

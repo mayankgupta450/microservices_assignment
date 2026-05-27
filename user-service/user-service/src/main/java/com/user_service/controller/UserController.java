@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.user_service.entity.User;
 import com.user_service.service.UserService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -27,6 +28,7 @@ public class UserController {
 
     // create user
     @PostMapping
+    @Operation(summary = "create user")
     public ResponseEntity<User> createUser(@Valid @RequestBody User user) {
 
         return ResponseEntity.ok(userService.createUser(user));
@@ -34,6 +36,7 @@ public class UserController {
 
     // get all users
     @GetMapping
+    @Operation(summary = "get all users")
     public ResponseEntity<List<User>> getAllUsers() {
 
         return ResponseEntity.ok(userService.getAllUsers());
@@ -41,6 +44,7 @@ public class UserController {
 
     // get user by id
     @GetMapping("/{id}")
+    @Operation(summary = "get user by id")
     public ResponseEntity<User> getUserById(@PathVariable Long id) {
 
         return ResponseEntity.ok(userService.getUserById(id));
@@ -48,6 +52,7 @@ public class UserController {
 
     // UPDATE USER
     @PutMapping("/{id}")
+    @Operation(summary = "update user")
     public ResponseEntity<User> updateUser(
             @PathVariable Long id,
             @Valid @RequestBody User user) {
@@ -56,6 +61,7 @@ public class UserController {
     }
     
     @DeleteMapping("/{id}")
+    @Operation(summary = "delete user")
     public ResponseEntity<String> deleteUser(@PathVariable Long id) {
 
         userService.deleteUser(id);
