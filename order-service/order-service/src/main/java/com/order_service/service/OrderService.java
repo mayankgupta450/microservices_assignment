@@ -34,7 +34,34 @@ public class OrderService {
 	}
 
 	public List<Order> getAllOrders() {
-		return orderRepository.findAll();
+		List<Order> orders = orderRepository.findAll();
+
+		if (orders.isEmpty()) {
+			throw new RuntimeException("No orders available at the moment");
+		}
+
+		return orders;
+	}
+
+	public Order getOrderById(Long id) {
+		return orderRepository.findById(id).orElseThrow(() -> new RuntimeException("Order not found with id-" + id));
+	}
+
+	public List<Order> getOrdersByUserId(Long userId) {
+
+	    try {
+	    	userCustomer.getUserById(userId);
+	    } catch (Exception ex) {
+	        throw new RuntimeException("Invalid user id or user does not exist:- " + userId);
+	    }
+
+	    List<Order> orders = orderRepository.findByUserId(userId);
+
+	    if (orders.isEmpty()) {
+	        throw new RuntimeException("No orders found for user id: " + userId);
+	    }
+
+	    return orders;
 	}
 
 }
