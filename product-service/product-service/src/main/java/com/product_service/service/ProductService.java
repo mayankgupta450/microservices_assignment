@@ -31,4 +31,28 @@ public class ProductService {
 		return products;
 	}
 
+	public Product getProductById(String id) {
+		return productRepository.findById(id)
+				.orElseThrow(() -> new NoSuchElementException("Product not found with id: " + id));
+	}
+
+	public Product updateProduct(String id, Product updatedProduct) {
+
+		Product existingProduct = getProductById(id);
+
+		existingProduct.setName(updatedProduct.getName());
+		existingProduct.setDescription(updatedProduct.getDescription());
+		existingProduct.setPrice(updatedProduct.getPrice());
+		existingProduct.setStock(updatedProduct.getStock());
+
+		return productRepository.save(existingProduct);
+	}
+
+	public void deleteProduct(String id) {
+
+		Product existingProduct = getProductById(id);
+
+		productRepository.delete(existingProduct);
+	}
+
 }

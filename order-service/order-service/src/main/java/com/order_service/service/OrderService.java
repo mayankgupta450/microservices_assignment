@@ -6,7 +6,9 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 
+import com.order_service.customers.ProductCustomer;
 import com.order_service.customers.UserCustomer;
+import com.order_service.dto.ProductResponse;
 import com.order_service.entity.Order;
 import com.order_service.repository.OrderRepository;
 
@@ -18,6 +20,7 @@ public class OrderService {
 
 	private final OrderRepository orderRepository;
 	private final UserCustomer userCustomer;
+	private final ProductCustomer productCustomer;
 
 	public Order createOrder(Order order) {
 
@@ -25,6 +28,18 @@ public class OrderService {
 			userCustomer.getUserById(order.getUserId());
 		} catch (RestClientException ex) {
 			throw new RuntimeException("Invalid user id. User does not exist");
+		}
+
+		ProductResponse product;
+
+		try {
+			product = productCustomer.getProductById(order.getProductId());
+		} catch (RestClientException ex) {
+			throw new RuntimeException("Invalid product id. Product does not exist");
+		}
+
+		if (order.getQuantity() > product.getStock()) {
+			throw new RuntimeException("Insufficient stock and only this is available: " + product.getStock());
 		}
 
 		order.setOrderDate(LocalDateTime.now());
@@ -49,41 +64,41 @@ public class OrderService {
 
 	public List<Order> getOrdersByUserId(Long userId) {
 
-	    try {
-	    	userCustomer.getUserById(userId);
-	    } catch (Exception ex) {
-	        throw new RuntimeException("Invalid user id or user does not exist:- " + userId);
-	    }
+		try {
+			userCustomer.getUserById(userId);
+		} catch (Exception ex) {
+			throw new RuntimeException("Invalid user id or user does not exist:- " + userId);
+		}
 
-	    List<Order> orders = orderRepository.findByUserId(userId);
+		List<Order> orders = orderRepository.findByUserId(userId);
 
-	    if (orders.isEmpty()) {
-	        throw new RuntimeException("No orders found for user id: " + userId);
-	    }
+		if (orders.isEmpty()) {
+			throw new RuntimeException("No orders found for user id: " + userId);
+		}
 
-	    return orders;
+		return orders;
 	}
-	
-    public Order updateOrder(Long id, Order updatedOrder) {
 
-        Order existingOrder = getOrderById(id);
+	public Order updateOrder(Long id, Order updatedOrder) {
 
-        // user id  cannot be changed
-        if (!existingOrder.getUserId().equals(updatedOrder.getUserId())) {
-            throw new RuntimeException("User id cannot be changed for an order");
-        }
-        existingOrder.setProductId(updatedOrder.getProductId());
-        existingOrder.setQuantity(updatedOrder.getQuantity());
-        existingOrder.setTotalAmount(updatedOrder.getTotalAmount());
-        existingOrder.setStatus(updatedOrder.getStatus());
+		Order existingOrder = getOrderById(id);
 
-        return orderRepository.save(existingOrder);
-    }
+		// user id cannot be changed
+		if (!existingOrder.getUserId().equals(updatedOrder.getUserId())) {
+			throw new RuntimeException("User id cannot be changed for an order");
+		}
+		existingOrder.setProductId(updatedOrder.getProductId());
+		existingOrder.setQuantity(updatedOrder.getQuantity());
+		existingOrder.setTotalAmount(updatedOrder.getTotalAmount());
+		existingOrder.setStatus(updatedOrder.getStatus());
 
-    public void deleteOrder(Long id) {
+		return orderRepository.save(existingOrder);
+	}
 
-        Order existingOrder = getOrderById(id);
-        orderRepository.delete(existingOrder);
-    }
+	public void deleteOrder(Long id) {
+
+		Order existingOrder = getOrderById(id);
+		orderRepository.delete(existingOrder);
+	}
 
 }
