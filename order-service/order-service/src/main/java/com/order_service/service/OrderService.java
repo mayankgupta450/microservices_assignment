@@ -63,5 +63,27 @@ public class OrderService {
 
 	    return orders;
 	}
+	
+    public Order updateOrder(Long id, Order updatedOrder) {
+
+        Order existingOrder = getOrderById(id);
+
+        // user id  cannot be changed
+        if (!existingOrder.getUserId().equals(updatedOrder.getUserId())) {
+            throw new RuntimeException("User id cannot be changed for an order");
+        }
+        existingOrder.setProductId(updatedOrder.getProductId());
+        existingOrder.setQuantity(updatedOrder.getQuantity());
+        existingOrder.setTotalAmount(updatedOrder.getTotalAmount());
+        existingOrder.setStatus(updatedOrder.getStatus());
+
+        return orderRepository.save(existingOrder);
+    }
+
+    public void deleteOrder(Long id) {
+
+        Order existingOrder = getOrderById(id);
+        orderRepository.delete(existingOrder);
+    }
 
 }
